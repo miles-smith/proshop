@@ -6,6 +6,7 @@
   "author": "Miles Smith <miles-smith@users.noreply.github.com>",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "nodemon server"
   },
