@@ -1,0 +1,18 @@
+{
+  "name": "proshop-backend",
+  "version": "1.0.0",
+  "description": "Express backend server for the MERN shopping cart app",
+  "main": "server.js",
+  "author": "Miles Smith <miles-smith@users.noreply.github.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "nodemon server"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.5"
+  }
+}
