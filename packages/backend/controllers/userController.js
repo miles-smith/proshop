@@ -26,6 +26,37 @@ export const authenticateUser = asyncHandler(
   }
 );
 
+// @description Register a new user
+// @route POST /api/users
+// @access Public
+export const createUser = asyncHandler(
+  async (request, response) => {
+    const { name, email, password } = request.body;
+
+    let user = await User.findOne({ email });
+
+    if(user) {
+      response.status(400);
+      throw new Error('User already exists');
+    }
+
+    user = await User.create({ name, email, password });
+
+    if(user) {
+      response.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token: generateToken(user._id),
+      });
+    } else {
+      response.status(400);
+      throw new Error('Invalid user data');
+    }
+  }
+);
+
 // @description Fetch user profile
 // @route GET /api/users/profile
 // @access Private
