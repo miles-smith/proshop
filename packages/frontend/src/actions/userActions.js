@@ -8,6 +8,9 @@ import {
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
   USER_REGISTER_FAILURE,
+  USER_DETAILS_REQUEST,
+  USER_DETAILS_SUCCESS,
+  USER_DETAILS_FAILURE,
 } from '../constants/userConstants';
 
 export const login = (email, password) => async (dispatch) => {
@@ -76,6 +79,38 @@ export const register = (name, email, password) => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: USER_REGISTER_FAILURE,
+      payload:
+        e.response && e.response.data.message
+          ? e.response.data.message
+          : e.message
+    });
+  }
+}
+
+export const getUserDetails = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_DETAILS_REQUEST
+    });
+
+    const { userLogin: { userInfo } } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userInfo.token}`,
+      }
+    };
+
+    const { data } = await axios.get(`/api/users/${id}`, config);
+
+    dispatch({
+      type: USER_DETAILS_SUCCESS,
+      payload: data
+    });
+  } catch (e) {
+    dispatch({
+      type: USER_DETAILS_FAILURE,
       payload:
         e.response && e.response.data.message
           ? e.response.data.message
