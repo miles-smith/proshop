@@ -79,3 +79,35 @@ export const getUserProfile = asyncHandler(
     }
   }
 );
+
+// @description Update user profile
+// @route PATCH /api/users/profile
+// @access Private
+export const updateUserProfile = asyncHandler(
+  async (request, response) => {
+    // QUESTION: Is this an unneccessary DB operation? We already have a user instance in the
+    // request object?
+    let user = await User.findById(request.user._id);
+
+    if(user) {
+      user.name = request.body.name || user.name;
+      user.email = request.body.email || user.email;
+
+      if(request.body.password) {
+        user.password = request.body.password;
+      }
+
+      user = await user.save();
+
+      response.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      });
+    } else {
+      response.status(404);
+      throw new Error('Not Found');
+    }
+  }
+);
