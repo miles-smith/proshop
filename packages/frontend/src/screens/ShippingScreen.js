@@ -4,6 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 
 import { saveShippingDetails } from '../actions/cartActions';
 import FormContainer from '../components/FormContainer';
+import CheckoutSteps from '../components/CheckoutSteps';
 
 const ShippingScreen = ({ history }) => {
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ const ShippingScreen = ({ history }) => {
 
   return(
     <FormContainer>
+      <CheckoutSteps stepOne stepTwo />
       <h1>Shipping</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group controlId="address">
