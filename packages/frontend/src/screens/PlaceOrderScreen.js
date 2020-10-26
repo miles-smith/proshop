@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
 
-// import { createOrder } from '../actions/cartActions';
+import { createOrder } from '../actions/orderActions';
 import Message from '../components/Message';
 import CheckoutSteps from '../components/CheckoutSteps';
 
-const PlaceOrderScreen   = ({}) => {
+const PlaceOrderScreen = ({ history }) => {
   const dispatch = useDispatch();
   const cart = useSelector(state =>  state.cart);
   const { cartItems } = cart;
+
+  const orderCreate = useSelector(state => state.orderCreate);
+  const { order, success, error } = orderCreate;
 
   cart.itemsPrice = cartItems.reduce((acc, item) => (
     acc + item.price * item.qty
@@ -20,8 +23,26 @@ const PlaceOrderScreen   = ({}) => {
   cart.taxPrice = +(0.15 * cart.itemsPrice).toFixed(2);
   cart.totalPrice = cart.itemsPrice + cart.shippingPrice + cart.taxPrice;
 
-  const placeOrderHandler = (event) => {
+  useEffect(() => {
+    if(success) {
+      history.push(`/orders/${order._id}`);
+    } else {
 
+    }
+  }, [history, success, order]);
+
+  const placeOrderHandler = (event) => {
+    dispatch(
+      createOrder({
+        orderItems: cart.cartItems,
+        shippingDetails: cart.shippingDetails,
+        paymentMethod: cart.paymentMethod,
+        itemsPrice: cart.itemsPrice,
+        shippingPrice: cart.shippingPrice,
+        taxPrice: cart.taxPrice,
+        totalPrice: cart.totalPrice,
+      })
+    );
   }
 
   return(
@@ -105,6 +126,9 @@ const PlaceOrderScreen   = ({}) => {
                   <Col>Total</Col>
                   <Col>${cart.totalPrice.toFixed(2)}</Col>
                 </Row>
+              </ListGroup.Item>
+              <ListGroup.Item>
+                {error && <Message variant="danger">{error}</Message>}
               </ListGroup.Item>
               <ListGroup.Item>
                 <Button
