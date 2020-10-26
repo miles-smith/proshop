@@ -64,7 +64,7 @@ export const payOrder = asyncHandler(
 
     if(order) {
       order.isPaid = true;
-      order.paidAt = Date.now;
+      order.paidAt = Date.now();
       order.paymentResult = {
         id: request.body.id,
         status: request.body.status,
