@@ -38,3 +38,19 @@ export const createOrder = asyncHandler(
     }
   }
 );
+
+// @description Fetch an Order
+// @route GET /api/orders/:id
+// @access Private
+export const getOrderById = asyncHandler(
+  async (request, response) => {
+    const order = await Order.findById(request.params.id).populate('user', 'email name');
+
+    if(order) {
+      response.json(order);
+    } else {
+      response.status(404);
+      throw new Error('Order not found');
+    }
+  }
+);
