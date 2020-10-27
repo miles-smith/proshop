@@ -39,6 +39,19 @@ export const createOrder = asyncHandler(
   }
 );
 
+// @description Fetch all orders accessible by current user
+// @route GET /api/orders
+// @access Private
+export const getOrders = asyncHandler(
+  async (request, response) => {
+    const user = request.user;
+    const scope = user.isAdmin ? {} : { user };
+    const orders = await Order.find(scope);
+
+    response.json(orders);
+  }
+)
+
 // @description Fetch an Order
 // @route GET /api/orders/:id
 // @access Private
