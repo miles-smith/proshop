@@ -111,3 +111,14 @@ export const updateUserProfile = asyncHandler(
     }
   }
 );
+
+// @description Fetch all users
+// @route GET /api/users
+// @access Private/Admin
+export const getUsers = asyncHandler(
+  async (request, response) => {
+    const users = await User.find({});
+
+    response.json(users);
+  }
+);
