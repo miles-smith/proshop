@@ -26,6 +26,28 @@ export const createProduct = asyncHandler(
   }
 );
 
+// @description Update a product
+// @route PATCH /api/products/:id
+// @access Private/Admin
+export const updateProduct = asyncHandler(
+  async (request, response) => {
+    const queryOptions = { new: true };
+    const { user, ...data } = request.body;
+
+    const product = await Product.findByIdAndUpdate(
+      request.params.id,
+      data,
+      queryOptions
+    );
+
+    if(product) {
+      response.json(product);
+    } else {
+      response.status(404).end();
+    }
+  }
+);
+
 // @description Fetch a single product
 // @route GET /api/products/:id
 // @access Public

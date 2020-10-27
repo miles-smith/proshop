@@ -4,6 +4,7 @@ import {
   getProducts,
   getProductById,
   createProduct,
+  updateProduct,
   deleteProduct,
 } from '../controllers/productController.js';
 
@@ -15,6 +16,7 @@ router.route('/')
 
 router.route('/:id')
   .get(getProductById)
+  .patch([protect, requireAdmin, updateProduct])
   .delete([protect, requireAdmin, deleteProduct]);
 
 export default router;
