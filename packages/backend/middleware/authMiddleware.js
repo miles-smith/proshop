@@ -31,3 +31,14 @@ export const protect = asyncHandler(
     }
   }
 );
+
+export const requireAdmin = (request, response, next) => {
+  const user = request.user;
+
+  if(user && user.isAdmin) {
+    next();
+  } else {
+    response.status(401);
+    throw new Error('Unauthorized. Admin access only.');
+  }
+}
