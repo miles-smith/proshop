@@ -27,3 +27,15 @@ export const getProductById = asyncHandler(
     }
   }
 );
+
+// @description Delete a product
+// @route DELETE /api/products/:id
+// @access Private/Admin
+export const deleteProduct = asyncHandler(
+  async (request, response) => {
+    const product = await Product.findByIdAndDelete(request.params.id);
+    const status = product ? 204 : 400;
+
+    response.status(status).end();
+  }
+);
