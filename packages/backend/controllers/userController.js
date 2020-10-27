@@ -123,6 +123,43 @@ export const getUsers = asyncHandler(
   }
 );
 
+// @description Fetch a single user
+// @route GET /api/users/:id
+// @access Private/Admin
+export const getUserById = asyncHandler(
+  async (request, response) => {
+    const user = await User.findById(request.params.id).select('-password');
+
+    if(user) {
+      response.json(user);
+    } else {
+      response.status(404).end();
+    }
+  }
+);
+
+// @description Update a single user
+// @route PATCH /api/users/:id
+// @access Private/Admin
+export const updateUser = asyncHandler(
+  async (request, response) => {
+    const queryOptions = { new: true };
+    const { password, ...data } = request.body;
+
+    const user = await User.findByIdAndUpdate(
+      request.params.id,
+      data,
+      queryOptions
+    ).select('-password');
+
+    if(user) {
+      response.json(user);
+    } else {
+      response.status(404).end();
+    }
+  }
+);
+
 // @description Delete a user
 // @route DELETE /api/users/:id
 // @access Private/Admin

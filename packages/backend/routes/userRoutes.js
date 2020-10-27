@@ -7,6 +7,8 @@ import {
   getUserProfile,
   updateUserProfile,
   getUsers,
+  getUserById,
+  updateUser,
   deleteUser,
 } from '../controllers/userController.js';
 
@@ -19,6 +21,8 @@ router.route('/profile')
   .get([protect, getUserProfile])
   .patch([protect, updateUserProfile]);
 router.route('/:id')
+  .get([protect, requireAdmin, getUserById])
+  .patch([protect, requireAdmin, updateUser])
   .delete([protect, requireAdmin, deleteUser]);
 
 export default router;
