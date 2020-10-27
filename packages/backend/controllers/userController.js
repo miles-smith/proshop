@@ -122,3 +122,16 @@ export const getUsers = asyncHandler(
     response.json(users);
   }
 );
+
+// @description Delete a user
+// @route DELETE /api/users/:id
+// @access Private/Admin
+export const deleteUser = asyncHandler(
+  async (request, response) => {
+    const user = await User.findByIdAndDelete(request.params.id);
+    const status = user ? 204 : 400;
+
+    response.status(status)
+      .end();
+  }
+);
