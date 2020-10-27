@@ -12,6 +12,20 @@ export const getProducts = asyncHandler(
   }
 );
 
+// @description Create a product
+// @route POST /api/products
+// @access Private/Admin
+export const createProduct = asyncHandler(
+  async (request, response) => {
+    const product = await Product.create(request.body);
+    if(product) {
+      response.status(201).json(product);
+    } else {
+      response.status(401).end();
+    }
+  }
+);
+
 // @description Fetch a single product
 // @route GET /api/products/:id
 // @access Public
