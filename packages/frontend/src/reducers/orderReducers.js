@@ -9,9 +9,25 @@ import {
   ORDER_PAYMENT_SUCCESS,
   ORDER_PAYMENT_FAILURE,
   ORDER_PAYMENT_RESET,
+  ORDER_LIST_REQUEST,
+  ORDER_LIST_SUCCESS,
+  ORDER_LIST_FAILURE,
 } from '../constants/orderConstants';
 
-export const orderCreateReducer = (state = [], action) => {
+export const orderListReducer = (state = { orders: [] }, action) => {
+  switch(action.type) {
+    case ORDER_LIST_REQUEST:
+      return { loading: true };
+    case ORDER_LIST_SUCCESS:
+      return { loading: false, orders: action.payload };
+    case ORDER_LIST_FAILURE:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
+export const orderCreateReducer = (state = { orders: [] }, action) => {
   switch(action.type) {
     case ORDER_CREATE_REQUEST:
       return { loading: true };
