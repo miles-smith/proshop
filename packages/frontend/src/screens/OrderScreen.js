@@ -1,9 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { PayPalButton } from 'react-paypal-button-v2';
+import axios from 'axios';
 
-import { getOrderDetails } from '../actions/orderActions';
+import { ORDER_PAYMENT_RESET } from '../constants/orderConstants';
+import {
+  getOrderDetails,
+  payOrder,
+} from '../actions/orderActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 
@@ -12,8 +18,13 @@ const OrderScreen = ({ match }) => {
 
   const orderId = match.params.id;
 
+  const [clientId, setClientId] = useState('sb');
+
   const orderDetails = useSelector(state => state.orderDetails);
   const { order, loading, error } = orderDetails;
+
+  const orderPayment = useSelector(state => state.orderPayment);
+  const { success: successPayment } = orderPayment;
 
   let itemsPrice = 0;
   if(order) {
@@ -22,13 +33,29 @@ const OrderScreen = ({ match }) => {
     ), 0);
   }
 
+  const getPayPalConfig = async () => {
+    const { data: clientId } = await axios.get('/api/config/paypal');
+    setClientId(clientId);
+  }
+
   useEffect(() => {
-    if(!order || order._id !== orderId) {
+    getPayPalConfig();
+  }, []);
+
+  useEffect(() => {
+    if(!order || order._id !== orderId || successPayment) {
+      dispatch({ type: ORDER_PAYMENT_RESET });
       dispatch(
         getOrderDetails(orderId)
       );
     }
-  }, [dispatch, match, orderId, order]);
+  }, [dispatch, match, orderId, order, successPayment]);
+
+  const onPaymentSuccessHandler = (paymentResult) => {
+    dispatch(
+      payOrder(order._id, paymentResult)
+    );
+  };
 
   return(
     loading ? (
@@ -126,6 +153,17 @@ const OrderScreen = ({ match }) => {
                     <Col>${order.totalPrice.toFixed(2)}</Col>
                   </Row>
                 </ListGroup.Item>
+                {!order.isPaid && (
+                  <ListGroup.Item>
+                    {!successPayment && (
+                      <PayPalButton
+                        amount={order.totalPrice}
+                        onSuccess={onPaymentSuccessHandler}
+                        options={{ clientId: clientId }}
+                      />
+                    )}
+                  </ListGroup.Item>
+                )}
               </ListGroup>
             </Card>
           </Col>
