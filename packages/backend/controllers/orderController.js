@@ -46,7 +46,7 @@ export const getOrders = asyncHandler(
   async (request, response) => {
     const user = request.user;
     const scope = user.isAdmin ? {} : { user };
-    const orders = await Order.find(scope);
+    const orders = await Order.find(scope).populate('user', 'id name');
 
     response.json(orders);
   }
