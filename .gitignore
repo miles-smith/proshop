@@ -23,3 +23,8 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+packages/backend/uploads/*.jpg
+packages/backend/uploads/*.jpeg
+packages/backend/uploads/*.png
+
