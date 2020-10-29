@@ -14,7 +14,7 @@ import {
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = ({ history, match }) => {
   const dispatch = useDispatch();
 
   const orderId = match.params.id;
@@ -50,6 +50,10 @@ const OrderScreen = ({ match }) => {
   }, []);
 
   useEffect(() => {
+    if(!userInfo) {
+      history.push('/login');
+    }
+
     if(!order || order._id !== orderId || successPayment || successDeliver) {
       dispatch({ type: ORDER_PAYMENT_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
@@ -178,7 +182,7 @@ const OrderScreen = ({ match }) => {
                     )}
                   </ListGroup.Item>
                 )}
-                {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                   <ListGroup.Item>
                     {loadingDeliver ? (
                       <Loader />
