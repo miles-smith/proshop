@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { PayPalButton } from 'react-paypal-button-v2';
 import axios from 'axios';
 
-import { ORDER_PAYMENT_RESET } from '../constants/orderConstants';
+import { ORDER_PAYMENT_RESET, ORDER_DELIVER_RESET } from '../constants/orderConstants';
 import {
   getOrderDetails,
   payOrder,
+  deliverOrder,
 } from '../actions/orderActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -20,11 +21,17 @@ const OrderScreen = ({ match }) => {
 
   const [clientId, setClientId] = useState('sb');
 
+  const userLogin = useSelector(state => state.userLogin);
+  const { userInfo } = userLogin;
+
   const orderDetails = useSelector(state => state.orderDetails);
   const { order, loading, error } = orderDetails;
 
   const orderPayment = useSelector(state => state.orderPayment);
   const { success: successPayment } = orderPayment;
+
+  const orderDeliver = useSelector(state => state.orderDeliver);
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
 
   let itemsPrice = 0;
   if(order) {
@@ -43,19 +50,26 @@ const OrderScreen = ({ match }) => {
   }, []);
 
   useEffect(() => {
-    if(!order || order._id !== orderId || successPayment) {
+    if(!order || order._id !== orderId || successPayment || successDeliver) {
       dispatch({ type: ORDER_PAYMENT_RESET });
+      dispatch({ type: ORDER_DELIVER_RESET });
       dispatch(
         getOrderDetails(orderId)
       );
     }
-  }, [dispatch, match, orderId, order, successPayment]);
+  }, [dispatch, match, orderId, order, successPayment, successDeliver]);
 
   const onPaymentSuccessHandler = (paymentResult) => {
     dispatch(
       payOrder(order._id, paymentResult)
     );
   };
+
+  const deliverHandler = () => {
+    dispatch(
+      deliverOrder(order._id)
+    );
+  }
 
   return(
     loading ? (
@@ -161,6 +175,21 @@ const OrderScreen = ({ match }) => {
                         onSuccess={onPaymentSuccessHandler}
                         options={{ clientId: clientId }}
                       />
+                    )}
+                  </ListGroup.Item>
+                )}
+                {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                  <ListGroup.Item>
+                    {loadingDeliver ? (
+                      <Loader />
+                    ) : (
+                      <Button
+                        type="button"
+                        className="btn btn-block"
+                        onClick={deliverHandler}
+                      >
+                        Mark as Delivered
+                      </Button>
                     )}
                   </ListGroup.Item>
                 )}

@@ -94,3 +94,24 @@ export const payOrder = asyncHandler(
     }
   }
 );
+
+// @description Update order delivery status
+// @route PATCH /api/orders/:id/deliver
+// @access Private/Admin
+export const deliverOrder = asyncHandler(
+  async (request, response) => {
+    const order = await Order.findById(request.params.id);
+
+    if(order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+
+      await order.save();
+
+      response.json(order);
+    } else {
+      response.status(404);
+      throw new Error('Order not found');
+    }
+  }
+);
