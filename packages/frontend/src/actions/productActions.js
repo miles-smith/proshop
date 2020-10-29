@@ -13,6 +13,9 @@ import {
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
   PRODUCT_UPDATE_FAILURE,
+  PRODUCT_CREATE_REQUEST,
+  PRODUCT_CREATE_SUCCESS,
+  PRODUCT_CREATE_FAILURE,
 } from '../constants/productConstants';
 
 export const listProducts = () => async (dispatch) => {
@@ -53,6 +56,32 @@ export const fetchProduct = (id) => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: PRODUCT_DETAIL_FAILURE,
+      payload:
+        e.response && e.response.data.message
+          ? e.response.data.message
+          : e.message,
+    });
+  }
+}
+
+export const createProduct = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: PRODUCT_CREATE_REQUEST });
+
+    const { userLogin: { userInfo } } = getState();
+
+    const config = {
+      headers: {
+        "Authorization": `Bearer ${userInfo.token}`,
+      }
+    };
+
+    const { data } = await axios.post("/api/products", {}, config);
+
+    dispatch({ type: PRODUCT_CREATE_SUCCESS, payload: data });
+  } catch (e) {
+    dispatch({
+      type: PRODUCT_CREATE_FAILURE,
       payload:
         e.response && e.response.data.message
           ? e.response.data.message

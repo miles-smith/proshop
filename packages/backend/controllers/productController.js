@@ -17,7 +17,17 @@ export const getProducts = asyncHandler(
 // @access Private/Admin
 export const createProduct = asyncHandler(
   async (request, response) => {
-    const product = await Product.create(request.body);
+    const product = await Product.create({
+      user: request.user._id,
+      name: 'Sample Product',
+      description: 'This is a sample description',
+      price: 0,
+      image: '/images/sample.jpg',
+      brand: 'SampleBrand',
+      category: 'Dummy Category',
+      countInStock: 0,
+      numReviews: 0,
+    });
     if(product) {
       response.status(201).json(product);
     } else {
