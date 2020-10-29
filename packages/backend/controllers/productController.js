@@ -63,7 +63,10 @@ export const updateProduct = asyncHandler(
 // @access Public
 export const getProductById = asyncHandler(
   async (request, response) => {
-    const product = await Product.findById(request.params.id);
+    const product = await Product.findById(request.params.id).populate({
+      path: 'reviews',
+      populate: { path: 'user', select: 'id name' }
+    });
 
     if(product) {
       response.json(product);
