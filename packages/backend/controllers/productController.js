@@ -85,3 +85,49 @@ export const deleteProduct = asyncHandler(
     response.status(status).end();
   }
 );
+
+// @description Review a product
+// @route POST /api/products/:id/reviews
+// @access Private
+export const createProductReview = asyncHandler(
+  async (request, response) => {
+    const product = await Product.findById(request.params.id);
+
+    if(product) {
+      try {
+        const alreadyReviewed = product.reviews.find(
+          review => review.user._id.toString() === request.user._id.toString()
+        );
+
+        if(alreadyReviewed) {
+          response.status(400);
+          throw new Error('Product already reviewed');
+        }
+
+        const { rating, comment } = request.body;
+        const review = {
+          user: request.user,
+          rating: +rating,
+          comment,
+        }
+
+        product.reviews.push(review);
+
+        product.numReviews = product.reviews.length;
+        product.rating = product.reviews.reduce(
+          (acc, review) => review.rating + acc, 0
+        ) / product.numReviews;
+
+        await product.save();
+
+        response.status(201).json(review);
+      } catch (e) {
+        response.status(400);
+        throw new Error(e.message);
+      }
+    } else {
+      response.status(404);
+      throw new Error('Product not found');
+    }
+  }
+);
