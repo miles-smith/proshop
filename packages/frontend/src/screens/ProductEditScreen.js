@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
+import axios from 'axios';
 
 import { fetchProduct, updateProduct } from '../actions/productActions';
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants';
@@ -19,6 +20,7 @@ const ProductEditScreen = ({ history, match }) => {
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
   const [countInStock, setCountInStock] = useState(0);
+  const [uploading, setUploading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -48,6 +50,29 @@ const ProductEditScreen = ({ history, match }) => {
       }
     }
   }, [history, dispatch, productId, product, successUpdate]);
+
+  const uploadFileHandler = async (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+
+    formData.append('image', file);
+
+    setUploading(true);
+
+    try {
+      const config = {
+        "Content-Type": "multipart/form-data"
+      };
+
+      const { data } = await axios.post('/api/uploads', formData, config);
+
+      setImage(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -111,6 +136,13 @@ const ProductEditScreen = ({ history, match }) => {
                 value={image}
                 onChange={(event) => { setImage(event.target.value); }}
               />
+              <Form.File
+                id="image-file"
+                label="Choose file"
+                custom
+                onChange={uploadFileHandler}
+              />
+              {uploading && <Loader />}
             </Form.Group>
             <Form.Group controlId="brand">
               <Form.Label>Brand</Form.Label>
