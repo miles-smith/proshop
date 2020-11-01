@@ -8,9 +8,18 @@ export const getProducts = asyncHandler(
   async (request, response) => {
     const keyword = request.query.keyword;
     const scope =  keyword ? { name: { $regex: keyword, $options: 'i' } } : {};
-    const products = await Product.find(scope);
 
-    response.json(products);
+    const pageSize = 4;
+    const page = Number(request.query.pageNumber) || 1;
+    const count = await Product.countDocuments(scope);
+
+    const products = await Product.find(scope).limit(pageSize).skip(pageSize * (page - 1));
+
+    response.json({
+      products,
+      page,
+      pages: Math.ceil(count / pageSize)
+    });
   }
 );
 
