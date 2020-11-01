@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector }  from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Row, Col } from 'react-bootstrap';
 
 import { listProducts } from '../actions/productActions';
 import Product from '../components/Product';
+import ProductCarousel from '../components/ProductCarousel';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Paginate from '../components/Paginate';
@@ -24,6 +26,9 @@ const HomeScreen = ({ match }) => {
 
   return(
     <>
+      <div className="my-3">
+        {!keyword ? <ProductCarousel /> : <Link to="/" className="btn btn-primary">Back</Link>}
+      </div>
       <h1>Latest Products</h1>
       {loading ? (
         <Loader />
